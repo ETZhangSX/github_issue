@@ -4,7 +4,7 @@ import requests
 import json
 from pyquery import PyQuery
 from urllib.parse import urljoin
-
+from models.model_issue import Issue
 
 # 获取html页面文本
 def get_url_page(url):
@@ -15,7 +15,7 @@ def get_url_page(url):
         return response.text
 
 
-# 解析issue页
+# 解析issue页，爬取页面的issue列表
 def parse_issue_page(html, url):
     # 用于存储所有issue信息
     issue_list_per_page = list()
@@ -84,7 +84,7 @@ def get_issues(url):
     return issue_list
 
 
-# 获取单个issue的评论信息
+# 获取单个issue的详情页评论信息
 def get_issue_detail(issue_url):
     html = get_url_page(issue_url)
     document = PyQuery(html)
@@ -107,9 +107,11 @@ def get_issue_detail(issue_url):
 
 # 获取所有issue评论信息
 def get_all_issues_detail(issue_list):
+    issue_db = Issue()
     for issue in issue_list:
         timeline = get_issue_detail(issue['link'])
         issue['content'] = json.dumps(timeline, ensure_ascii=False)
-        # print(issue)
+        print(issue)
+        issue_db.save_one(issue)
     logging.info(issue_list)
     return issue_list
