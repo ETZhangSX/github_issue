@@ -32,17 +32,17 @@ class Issue(object):
     def save_all(self, issue_list):
 
         for issue in issue_list:
-            sql = """INSERT INTO issue(title, type, No, time, link, content)
-                             values ('%s', '%s', '%s', '%s','%s', '%s')""" % (
-            issue['title'], issue['type'], issue['id'], issue['time'], issue['link'], issue['content'])
+            sql = """INSERT INTO issue(title, source, type, No, time, answered, status, author, link, content)
+                             values ('%s', '%s', '%s','%s', '%s', '%s', '%s','%s', '%s')""" % (
+            issue['title'], issue['source'], issue['type'], issue['id'], issue['time'], issue['answered'], issue['status'], issue['link'], issue['content'])
 
             try:
                 self.cursor.execute(sql)
                 self.db.commit()
             except:
                 try:  # 插入失败表示数据库存在次issue，转为update更新
-                    sql_update = """UPDATE issue SET title='%s', type='%s', time='%s', content='%s' WHERE No='%s'""" % (
-                    issue['title'], issue['type'], issue['time'], issue['content'], issue['id'])
+                    sql_update = """UPDATE issue SET title='%s', type='%s', time='%s', answered='%s', status='%s', content='%s' WHERE No='%s'""" % (
+                    issue['title'], issue['type'], issue['time'], issue['answered'], issue['status'], issue['content'], issue['id'])
                     self.cursor.execute(sql_update)
                     self.db.commit()
                     print("更新完成")
@@ -51,17 +51,17 @@ class Issue(object):
                     self.db.rollback()
 
     def save_one(self, issue):
-        sql = """INSERT INTO issue(title, type, No, time, content)
-                                         values ('%s', '%s', '%s','%s', '%s', '%s')""" % (
-            issue['title'], issue['type'], issue['id'], issue['time'], issue['link'], issue['content'])
+        sql = """INSERT INTO issue(title, source, type, No, time, answered, status, author, link, content)
+                                         values ('%s', '%s', '%s','%s', '%s', '%s', '%s','%s', '%s')""" % (
+            issue['title'], issue['source'], issue['type'], issue['id'], issue['time'], issue['answered'], issue['status'], issue['link'], issue['content'])
 
         try:
             self.cursor.execute(sql)
             self.db.commit()
         except:
             try:  # 插入失败表示数据库存在次issue，转为update更新
-                sql_update = """UPDATE issue SET title='%s', type='%s', time='%s', content='%s' WHERE No='%s'""" % (
-                    issue['title'], issue['type'], issue['time'], issue['content'], issue['id'])
+                sql_update = """UPDATE issue SET title='%s', type='%s', time='%s', answered='%s', status='%s', content='%s' WHERE No='%s'""" % (
+                    issue['title'], issue['type'], issue['time'], issue['answered'], issue['status'], issue['content'], issue['id'])
                 self.cursor.execute(sql_update)
                 self.db.commit()
                 print("更新完成")

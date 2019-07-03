@@ -3,12 +3,20 @@
 
 ## 数据表结构
 * 标题 *title*
+* 源 *source*
 * 链接 *link*
 * 类别 *type*
 * 编号 *No*
 * 时间 *time*
+* 已回答 *answered*
+* 状态 *status* 
+	opened或closed
 * 评论内容 *content*
 
+	- author
+	- timestamp
+	- header
+	- comment
 ---
 ## 爬虫过程
 因为issue的详细内容与issue列表是分开的，因此爬虫过程可分为两步
@@ -29,6 +37,7 @@
 ### 第二步：爬取issue详情
 #### 可爬取信息
 * 评论内容 *content*
+* 已回答 *answered*
 
 #### 爬取过程
 1. 获取issue item页面
