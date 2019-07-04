@@ -40,7 +40,7 @@ def parse_issue_page(html, url, status):
         type   = item('.IssueLabel').text()
         link   = urljoin(url, head.attr('href'))
         time   = item('span').filter('.opened-by').children('relative-time').attr('datetime')
-        author = item('.opened-by').filter('a').text()
+        author = item('.opened-by a').text()
         # 没有添加标签的类别，使用default代替
         if type == '':
             type = 'default'
@@ -49,7 +49,7 @@ def parse_issue_page(html, url, status):
         item_info = {
             'id'      :  id,
             'source'  :  urlparse(url).path,
-            'title'   :  title,
+            'title'   :  title.replace("'", "''"),
             'type'    :  type,
             'link'    :  link,
             'time'    :  time,
@@ -75,7 +75,6 @@ def parse_issue_page(html, url, status):
 
 # 循环获取所有issue页面获取所有issue项, 返回issue list
 def get_issues(url):
-    base_url = url
     html = get_url_page(url)
     issue_list, next_page = parse_issue_page(html, url, 'opened')
 
@@ -84,21 +83,22 @@ def get_issues(url):
         issue_list_per_page, next_page = parse_issue_page(html, url, 'opened')
         issue_list += issue_list_per_page
 
+    document = PyQuery(html)
+    closed_url = urljoin(url, document('#js-issues-toolbar .table-list-header-toggle.states a').not_('.selected').attr('href'))
+
     # 爬取已关闭的issue
-    closed_url = base_url + '?q=is%3Aissue+is%3Aclosed'
-    html = get_url_page(closed_url)
-    temp_list, next_page = parse_issue_page(html, closed_url, 'closed')
-
-    issue_list = temp_list
-
-    while next_page != None:
-        html = get_url_page(next_page)
-        issue_list_per_page, next_page = parse_issue_page(html, closed_url, 'closed')
-        issue_list += issue_list_per_page
+    # html = get_url_page(closed_url)
+    # temp_list, next_page = parse_issue_page(html, closed_url, 'closed')
+    #
+    # issue_list = temp_list
+    #
+    # while next_page != None:
+    #     html = get_url_page(next_page)
+    #     issue_list_per_page, next_page = parse_issue_page(html, closed_url, 'closed')
+    #     issue_list += issue_list_per_page
 
 
     logging.info(issue_list)
-    print(issue_list)
     return issue_list
 
 
@@ -107,17 +107,16 @@ def get_issue_detail(issue_url):
     answered = 'no'
     html = get_url_page(issue_url)
     document = PyQuery(html)
-
+    issue_author = document('.TableObject-item.TableObject-item--primary').filter('.author.text-bold.link-gray').text()
     timeline = list()
     comments = document('.timeline-comment').items()
-
-    issue_author = comments[0]('a').filter('author').text()
+    # issue_author = comments[0]('a').filter('author').text()
 
     for comment in comments:
-        author = comment('a').filter('author').text()
-        header = comment('.timeline-comment-header').text()
+        author = comment('a').filter('.author').text()
+        header = comment('.timeline-comment-header').text().replace("'", "''")
         timestamp = comment('.timeline-comment-header').children('relative-time').attr('datetime')
-        comment_text = comment('table').text()
+        comment_text = comment('table').text().replace("'", "''")
         comment_item = {
             'author'    : author,
             'header'    : header,

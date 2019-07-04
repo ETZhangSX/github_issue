@@ -52,19 +52,21 @@ class Issue(object):
 
     def save_one(self, issue):
         sql = """INSERT INTO issue(title, source, type, No, time, answered, status, author, link, content)
-                                         values ('%s', '%s', '%s','%s', '%s', '%s', '%s','%s', '%s')""" % (
-            issue['title'], issue['source'], issue['type'], issue['id'], issue['time'], issue['answered'], issue['status'], issue['link'], issue['content'])
+                                         values('%s', '%s', '%s','%s', '%s', '%s', '%s','%s' ,'%s', '%s')""" % (
+            issue['title'], issue['source'], issue['type'], issue['id'], issue['time'], issue['answered'], issue['status'], issue['author'], issue['link'], issue['content'])
 
         try:
             self.cursor.execute(sql)
             self.db.commit()
-        except:
+            print("%s : Insert successfully" % issue['id'])
+        except Exception as e:
             try:  # 插入失败表示数据库存在次issue，转为update更新
+                print("Exception: %s" % e)
                 sql_update = """UPDATE issue SET title='%s', type='%s', time='%s', answered='%s', status='%s', content='%s' WHERE No='%s'""" % (
                     issue['title'], issue['type'], issue['time'], issue['answered'], issue['status'], issue['content'], issue['id'])
                 self.cursor.execute(sql_update)
                 self.db.commit()
-                print("更新完成")
+                print("%s : Update successfully" % issue['id'])
             except Exception as e:
                 logging.error("update error:%s" % e)
                 self.db.rollback()

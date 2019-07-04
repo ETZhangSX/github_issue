@@ -11,6 +11,7 @@
 * 已回答 *answered*
 * 状态 *status* 
 	opened或closed
+* 题主 *author*
 * 评论内容 *content*
 
 	- author
