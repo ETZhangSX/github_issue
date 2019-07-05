@@ -17,16 +17,52 @@ db = pymysql.Connect(
 
 cursor = db.cursor()
 
-sql = """CREATE TABLE IF NOT EXISTS issue(
-         id INT(11) NOT NULL AUTO_INCREMENT,
-         title CHAR(255),
-         type CHAR(18),
-         No CHAR(11) NOT NULL unique,
-         time CHAR(18) ,
-         content mediumtext,
-         PRIMARY KEY (`id`),
-         UNIQUE KEY `No_UNIQUE` (`No`))"""
+sql = """
+DROP TABLE IF EXISTS `issue`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `issue` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) DEFAULT NULL,
+  `source` varchar(45) DEFAULT NULL,
+  `type` varchar(45) DEFAULT NULL,
+  `No` varchar(45) NOT NULL,
+  `opened_time` varchar(45) DEFAULT NULL,
+  `latest_time` varchar(45) DEFAULT NULL,
+  `link` varchar(255) DEFAULT NULL,
+  `answered` varchar(45) NOT NULL,
+  `status` varchar(45) NOT NULL,
+  `author` varchar(255) NOT NULL,
+  `content` mediumtext,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `No_UNIQUE` (`No`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 
-cursor.execute(sql)
+
+DROP TABLE IF EXISTS `pull`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pull` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) DEFAULT NULL,
+  `source` varchar(45) DEFAULT NULL,
+  `type` varchar(45) DEFAULT NULL,
+  `No` varchar(45) NOT NULL,
+  `opened_time` varchar(45) DEFAULT NULL,
+  `latest_time` varchar(45) DEFAULT NULL,
+  `link` varchar(255) DEFAULT NULL,
+  `answered` varchar(45) NOT NULL,
+  `status` varchar(45) NOT NULL,
+  `author` varchar(255) NOT NULL,
+  `content` mediumtext,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `No_UNIQUE` (`No`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;"""
+
+try:
+    cursor.execute(sql)
+    db.commit()
+except Exception as e:
+    print("Mysql create table error: %s" % e)
 
 db.close()

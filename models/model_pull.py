@@ -5,7 +5,7 @@ import logging
 
 utc_format = '%Y-%m-%dT%H:%M:%SZ'
 
-class Issue(object):
+class Pull(object):
     def __del__(self):
         self.cursor.close()
         self.db.close()
@@ -30,20 +30,20 @@ class Issue(object):
         except Exception as e:
             logging.error("Database connect error:%s" % e)
 
-    def save_all(self, issue_list):
+    def save_all(self, pull_list):
 
-        for issue in issue_list:
-            sql = """INSERT INTO issue(title, source, type, No, opened_time, latest_time, answered, status, author, link, content)
+        for pull in pull_list:
+            sql = """INSERT INTO pull(title, source, type, No, opened_time, latest_time, answered, status, author, link, content)
                              values ('%s', '%s', '%s','%s', '%s', '%s', '%s', '%s','%s', '%s')""" % (
-            issue['title'], issue['source'], issue['type'], issue['id'], issue['opened_time'], issue['latest_time'], issue['answered'], issue['status'], issue['link'], issue['content'])
+            pull['title'], pull['source'], pull['type'], pull['id'], pull['opened_time'], pull['latest_time'], pull['answered'], pull['status'], pull['link'], pull['content'])
 
             try:
                 self.cursor.execute(sql)
                 self.db.commit()
             except:
-                try:  # 插入失败表示数据库存在次issue，转为update更新
-                    sql_update = """UPDATE issue SET title='%s', type='%s', opened_time='%s', latest_time='%s', answered='%s', status='%s', content='%s' WHERE No='%s'""" % (
-                    issue['title'], issue['type'], issue['opened_time'], issue['latest_time'], issue['answered'], issue['status'], issue['content'], issue['id'])
+                try:  # 插入失败表示数据库存在次pull，转为update更新
+                    sql_update = """UPDATE pull SET title='%s', type='%s', opened_time='%s', latest_time='%s', answered='%s', status='%s', content='%s' WHERE No='%s'""" % (
+                    pull['title'], pull['type'], pull['opened_time'], pull['latest_time'], pull['answered'], pull['status'], pull['content'], pull['id'])
                     self.cursor.execute(sql_update)
                     self.db.commit()
                     print("更新完成")
@@ -51,54 +51,69 @@ class Issue(object):
                     logging.error("update error:%s" % e)
                     self.db.rollback()
 
-    def save_one(self, issue):
-        sql = """INSERT INTO issue(title, source, type, No, opened_time, latest_time, answered, status, author, link, content)
+    def save_one(self, pull):
+        sql = """INSERT INTO pull(title, source, type, No, opened_time, latest_time, answered, status, author, link, content)
                                          values('%s', '%s', '%s','%s', '%s', '%s', '%s', '%s','%s' ,'%s', '%s')""" % (
-            issue['title'], issue['source'], issue['type'], issue['id'], issue['opened_time'], issue['latest_time'], issue['answered'], issue['status'], issue['author'], issue['link'], issue['content'])
+            pull['title'], pull['source'], pull['type'], pull['id'], pull['opened_time'], pull['latest_time'], pull['answered'], pull['status'], pull['author'], pull['link'], pull['content'])
 
         try:
             self.cursor.execute(sql)
             self.db.commit()
-            print("%s : Insert successfully" % issue['id'])
+            print("%s : Insert successfully" % pull['id'])
         except Exception as e:
-            try:  # 插入失败表示数据库存在次issue，转为update更新
+            try:  # 插入失败表示数据库存在次pull，转为update更新
                 print("Exception: %s" % e)
-                sql_update = """UPDATE issue SET title='%s', type='%s', opened_time='%s', latest_time='%s', answered='%s', status='%s', content='%s' WHERE No='%s'""" % (
-                    issue['title'], issue['type'], issue['opened_time'], issue['latest_time'], issue['answered'], issue['status'], issue['content'], issue['id'])
+                sql_update = """UPDATE pull SET title='%s', type='%s', opened_time='%s', latest_time='%s', answered='%s', status='%s', content='%s' WHERE No='%s'""" % (
+                    pull['title'], pull['type'], pull['opened_time'], pull['latest_time'], pull['answered'], pull['status'], pull['content'], pull['id'])
                 self.cursor.execute(sql_update)
                 self.db.commit()
-                print("%s : Update successfully" % issue['id'])
+                print("%s : Update successfully" % pull['id'])
             except Exception as e:
                 logging.error("update error:%s" % e)
                 self.db.rollback()
 
-    # 获取对应源的issue信息
-    def issue_info(self, source):
-        total_count = self.get_issue_count(source)
-        closed_count = self.get_issue_count(source, "status='closed'")
-        select_results = self.select('issue', 'opened_time, latest_time', source, "status='closed'")
+    # 获取对应源的pull信息
+    def pull_info(self, source):
+        total_count = self.get_pull_count(source)
+        closed_count = self.get_pull_count(source, "status='Closed'")
+        opened_count = self.get_pull_count(source, "status='Opened'")
+        merged_count = self.get_pull_count(source, "status='Merged'")
 
+        select_closed = self.select('pull', 'opened_time, latest_time', source, "status='Closed'")
+        select_merged = self.select('pull', 'opened_time, latest_time', source, "status='Merged'")
 
 
         avg_time = datetime.timedelta()
+        avg_time_merged = datetime.timedelta()
 
-        for item in select_results:
+        for item in select_closed:
             opened_time = datetime.datetime.strptime(item[0], utc_format)
             closed_time = datetime.datetime.strptime(item[1], utc_format)
 
             avg_time += (closed_time - opened_time)
 
-        avg_time /= len(select_results)
+        for item in select_merged:
+            opened_time = datetime.datetime.strptime(item[0], utc_format)
+            closed_time = datetime.datetime.strptime(item[1], utc_format)
+            temp = (closed_time - opened_time)
+            avg_time += temp
+            avg_time_merged += temp
 
-        print('''Issues Info of %s :
-        total count: %s
-        closed count: %s
-        average opening time: %s
-        ''' % (source, total_count, closed_count, avg_time))
+        avg_time /= (len(select_closed) + len(select_merged))
+        avg_time_merged /= len(select_merged)
+
+        print('''pulls Info of %s :
+        Total count: %s
+        Closed count: %s
+        Opened count: %s
+        Merged count: %s
+        Average opening time: %s
+        Average opening time(Merged): %s
+        ''' % (source, total_count, closed_count, opened_count, merged_count, avg_time, avg_time_merged))
 
 
-    def get_issue_count(self, source, condition=""):
-        return self.count(table='issue', source=source, condition=condition)
+    def get_pull_count(self, source, condition=""):
+        return self.count(table='pull', source=source, condition=condition)
 
 
     def select(self, table, column, source, condition):
