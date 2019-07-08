@@ -7,7 +7,8 @@
 * 链接 *link*
 * 类别 *type*
 * 编号 *No*
-* 时间 *time*
+* 开启时间 *opened_time*
+* 
 * 已回答 *answered*
 * 状态 *status* 
 	opened或closed

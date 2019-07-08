@@ -6,6 +6,16 @@ from models.model_pull import Pull
 
 github_source_url = [
             'https://github.com/TarsCloud/Tars',
+            'https://github.com/TarsCloud/TarsDocker',
+            'https://github.com/TarsCloud/TarsWeb',
+            'https://github.com/TarsCloud/TarsCpp',
+            'https://github.com/TarsCloud/TarsJava',
+            'https://github.com/TarsCloud/TarsGo',
+            'https://github.com/TarsCloud/TarsFramework',
+            'https://github.com/TarsCloud/TarsProtocol',
+            'https://github.com/TarsCloud/TarsTup',
+            'https://github.com/TarsCloud/tars-unittest',
+            'https://github.com/TarsCloud/plugins',
             'https://github.com/Tencent/TSeer',
             'https://github.com/Tencent/DCache',
 ]

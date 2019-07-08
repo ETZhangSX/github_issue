@@ -76,7 +76,7 @@ class Pull(object):
     def pull_info(self, source):
         total_count = self.get_pull_count(source)
         closed_count = self.get_pull_count(source, "status='Closed'")
-        opened_count = self.get_pull_count(source, "status='Opened'")
+        opened_count = self.get_pull_count(source, "status='Open'")
         merged_count = self.get_pull_count(source, "status='Merged'")
 
         select_closed = self.select('pull', 'opened_time, latest_time', source, "status='Closed'")
@@ -99,8 +99,19 @@ class Pull(object):
             avg_time += temp
             avg_time_merged += temp
 
-        avg_time /= (len(select_closed) + len(select_merged))
-        avg_time_merged /= len(select_merged)
+        closed_len = (len(select_closed) + len(select_merged))
+        merged_len = len(select_merged)
+
+        if 0 == closed_len:
+            avg_time = 0
+        else:
+            avg_time /= closed_len
+
+        if 0 == merged_len:
+            avg_time_merged = 0
+        else:
+            avg_time_merged /= merged_len
+
 
         print('''pulls Info of %s :
         Total count: %s

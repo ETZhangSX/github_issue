@@ -132,14 +132,18 @@ def get_pull_detail(pull_url):
         if author != pull_author:
             answered = 'yes'
 
+    closed_time = str()
     if 'Merged' == status:
-        merged_time = document('#partial-discussion-header .TableObject-item--primary relative-time').attr('datetime')
-        comment_item = {
-            'author': pull_author,
-            'header': "Record Merged time",
-            'timestamp': merged_time,
-        }
-        timeline.append(comment_item)
+        closed_time = document('#partial-discussion-header .TableObject-item--primary relative-time').attr('datetime')
+    elif 'Closed' == status:
+        closed_time = document('.discussion-item-closed relative-time').attr('datetime')
+
+    comment_item = {
+        'author': pull_author,
+        'header': "Record Merged or Closed time",
+        'timestamp': closed_time,
+    }
+    timeline.append(comment_item)
 
     logging.info(timeline)
     return timeline, answered, status

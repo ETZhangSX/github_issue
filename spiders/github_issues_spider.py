@@ -6,6 +6,7 @@ from pyquery import PyQuery
 from urllib.parse import urljoin, urlparse
 from models.model_issue import Issue
 
+
 # 获取html页面文本
 def get_url_page(url):
     response = requests.get(url)
@@ -88,7 +89,7 @@ def get_issues(url):
     html = get_url_page(closed_url)
     temp_list, next_page = parse_issue_page(html, closed_url, 'closed')
 
-    issue_list = temp_list
+    issue_list += temp_list
 
     while next_page != None:
         html = get_url_page(next_page)
@@ -139,6 +140,7 @@ def get_all_issues_detail(issue_list):
         latest_time = timeline[-1]['timestamp']
         issue['opened_time'] = opened_time
         issue['latest_time'] = latest_time
+        issue['comment_number'] = len(timeline) - 1
         issue['answered'] = answered
         issue['content'] = json.dumps(timeline, ensure_ascii=False)
         # print(issue)
