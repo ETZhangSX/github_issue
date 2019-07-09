@@ -109,3 +109,7 @@ venv.bak/
 
 # MAC OSX File
 .DS_Store
+
+# Model Files
+models.model_issue
+models.model_pull
