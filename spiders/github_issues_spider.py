@@ -115,7 +115,7 @@ def get_issue_detail(issue_url):
         author = comment('a').filter('.author').text()
         header = comment('.timeline-comment-header').text().replace("'", "''")
         timestamp = comment('.timeline-comment-header h3 a').children('relative-time').attr('datetime')
-        comment_text = comment('table').text()
+        comment_text = "" # comment('table').text()
         comment_item = {
             'author'    : author,
             'header'    : header,
@@ -142,7 +142,8 @@ def get_all_issues_detail(issue_list):
         issue['latest_time'] = latest_time
         issue['comment_number'] = len(timeline) - 1
         issue['answered'] = answered
-        issue['content'] = pickle.dumps(timeline)
+        # issue['content'] = pickle.dumps(timeline)
+        # print(issue['content'])
         # print(issue)
         issue_db.save_one(issue)
     logging.info(issue_list)
