@@ -2,6 +2,7 @@ import logging
 import re
 import requests
 import json
+import pickle
 from pyquery import PyQuery
 from urllib.parse import urljoin, urlparse
 from models.model_pull import Pull
@@ -120,13 +121,15 @@ def get_pull_detail(pull_url):
         author = comment('a').filter('.author').text()
         header = comment('.timeline-comment-header').text().replace("'", "''")
         timestamp = comment('.timeline-comment-header h3 a').children('relative-time').attr('datetime')
-        # comment_text = comment('table').text().replace("'", "''")
+        comment_text = comment('table').text()
+
         comment_item = {
             'author'    : author,
             'header'    : header,
             'timestamp' : timestamp,
-            'comment'   : '' #comment_text
+            'comment'   : comment_text
         }
+
         timeline.append(comment_item)
 
         if author != pull_author:
@@ -160,8 +163,9 @@ def get_all_pulls_detail(pull_list):
         pull['latest_time'] = latest_time
         pull['answered'] = answered
         pull['status'] = status
-        pull['content'] = json.dumps(timeline, ensure_ascii=False)
+        pull['content'] = pickle.dumps(timeline)
         # print(issue)
         pull_db.save_one(pull)
+
     logging.info(pull_list)
     return pull_list

@@ -30,8 +30,8 @@ class Pull(object):
         except Exception as e:
             logging.error("Database connect error:%s" % e)
 
-    def save_all(self, pull_list):
 
+    def save_all(self, pull_list):
         for pull in pull_list:
             sql = """INSERT INTO pull(title, source, type, No, opened_time, latest_time, answered, status, author, link, content)
                              values ('%s', '%s', '%s','%s', '%s', '%s', '%s', '%s','%s', '%s')""" % (

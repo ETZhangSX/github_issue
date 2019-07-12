@@ -1,7 +1,7 @@
 import logging
 import re
 import requests
-import json
+import pickle
 from pyquery import PyQuery
 from urllib.parse import urljoin, urlparse
 from models.model_issue import Issue
@@ -115,12 +115,12 @@ def get_issue_detail(issue_url):
         author = comment('a').filter('.author').text()
         header = comment('.timeline-comment-header').text().replace("'", "''")
         timestamp = comment('.timeline-comment-header h3 a').children('relative-time').attr('datetime')
-        # comment_text = comment('table').text().replace("'", "''")
+        comment_text = comment('table').text()
         comment_item = {
             'author'    : author,
             'header'    : header,
             'timestamp' : timestamp,
-            'comment'   : '' #comment_text
+            'comment'   : comment_text
         }
         timeline.append(comment_item)
 
@@ -142,7 +142,7 @@ def get_all_issues_detail(issue_list):
         issue['latest_time'] = latest_time
         issue['comment_number'] = len(timeline) - 1
         issue['answered'] = answered
-        issue['content'] = json.dumps(timeline, ensure_ascii=False)
+        issue['content'] = pickle.dumps(timeline)
         # print(issue)
         issue_db.save_one(issue)
     logging.info(issue_list)
