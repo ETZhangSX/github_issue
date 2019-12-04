@@ -126,7 +126,7 @@ class Issue(object):
                 most_attention_issue += item[0]
 
         # 打印issue统计信息
-        print('''Issues Info of %s :
+        return '''Issues Info of %s :
         total count: %s
         closed count: %s
         average opening time: %s
@@ -134,7 +134,7 @@ class Issue(object):
         max number of comment: %s
         issue with longest handling time: %s
         longest handling time: %s
-        ''' % (source, total_count, closed_count, avg_time, most_attention_issue, comment_number, issue_with_longest_handling_time, longest_handling_time))
+        ''' % (source, total_count, closed_count, avg_time, most_attention_issue, comment_number, issue_with_longest_handling_time, longest_handling_time)
 
 
     # 获取issue总数

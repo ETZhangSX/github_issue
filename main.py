@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import sys
 from urllib.parse import urlparse
 from spiders import github_issues_spider, github_pulls_spider
@@ -84,9 +85,16 @@ def crawl_and_scrape(part):
 def get_info():
     issue = Issue()
     pull = Pull()
+    issue_info = str()
+    pulls_info = str()
     for url in github_source_url:
-        issue.issue_info("'%s'" % urlparse(url).path.split('/')[2])
-        pull.pull_info("'%s'" % urlparse(url).path.split('/')[2])
+        issue_info += issue.issue_info("'%s'" % urlparse(url).path.split('/')[2]) + "\n\n"
+        pulls_info += pull.pull_info("'%s'" % urlparse(url).path.split('/')[2]) + "\n\n"
+    with open("issue_info.txt", "wt") as f:
+        f.write(issue_info)
+    with open("pulls_info.txt", "wt") as f:
+        f.write(pulls_info)
+    print("Get info successfully!")
 
 if __name__ == '__main__':
     do()

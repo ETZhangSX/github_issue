@@ -113,14 +113,14 @@ class Pull(object):
             avg_time_merged /= merged_len
 
 
-        print('''pulls Info of %s :
+        return '''pulls Info of %s :
         Total count: %s
         Closed count: %s
         Opened count: %s
         Merged count: %s
         Average opening time: %s
         Average opening time(Merged): %s
-        ''' % (source, total_count, closed_count, opened_count, merged_count, avg_time, avg_time_merged))
+        ''' % (source, total_count, closed_count, opened_count, merged_count, avg_time, avg_time_merged)
 
 
     def get_pull_count(self, source, condition=""):
