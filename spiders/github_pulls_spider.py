@@ -38,7 +38,7 @@ def parse_pull_page(html, url, status):
         title  = head.text()
         type   = item('.IssueLabel').text()
         link   = urljoin(url, head.attr('href'))
-        # time   = item('span').filter('.opened-by').children('relative-time').attr('datetime')
+        time   = item('.opened-by relative-time').attr('datetime')
         author = item('.opened-by a').text()
         # 没有添加标签的类别，使用default代替
         if type == '':
@@ -47,15 +47,16 @@ def parse_pull_page(html, url, status):
         path = urlparse(url).path.split('/')[2]
         # 使用json类型保存
         item_info = {
-            'id'      :  path + "#" + id,
-            'source'  :  path,
-            'title'   :  title.replace("'", "''"),
-            'type'    :  type,
-            'link'    :  link,
-            'answered':  'no',
-            'status'  :  status,
-            'author'  :  author,
-            'content' :  ''
+            'id'         :  path + "#" + id,
+            'source'     :  path,
+            'title'      :  title.replace("'", "''"),
+            'type'       :  type,
+            'link'       :  link,
+            'answered'   :  'no',
+            'status'     :  status,
+            'latest_time':  time,
+            'author'     :  author,
+            'content'    :  ''
         }
         pull_list_per_page.append(item_info)
 
@@ -158,12 +159,12 @@ def get_all_pulls_detail(pull_list):
     for pull in pull_list:
         timeline, answered, status = get_pull_detail(pull['link'])
         opened_time = timeline[0]['timestamp']
-        latest_time = timeline[-1]['timestamp']
+        if pull['status'] != 'closed':
+            pull['latest_time'] = timeline[-1]['timestamp']
         pull['opened_time'] = opened_time
-        pull['latest_time'] = latest_time
         pull['answered'] = answered
         pull['status'] = status
-        pull['content'] = pickle.dumps(timeline)
+        # pull['content'] = pickle.dumps(timeline)
         # print(issue)
         pull_db.save_one(pull)
 
