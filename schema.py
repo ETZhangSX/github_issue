@@ -29,6 +29,7 @@ CREATE TABLE `issue` (
   `No` varchar(45) NOT NULL,
   `opened_time` varchar(45) DEFAULT NULL,
   `latest_time` varchar(45) DEFAULT NULL,
+  `comment_number` varchar(255) DEFAULT NULL,
   `link` varchar(255) DEFAULT NULL,
   `answered` varchar(45) NOT NULL,
   `status` varchar(45) NOT NULL,
